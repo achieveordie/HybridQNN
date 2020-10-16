@@ -1,6 +1,4 @@
 import numpy as np
-
-import torch
 from torch.autograd import Function
 from torchvision import datasets, transforms
 import torch.optim as optim
@@ -10,7 +8,7 @@ import torch.nn.functional as F
 import qiskit
 
 # import from ./circuits/
-from circuits.circuit_ry import QuantumCircuit
+from circuits.circuit_ry import Hybrid
 
 
 # Define the custom autograd Function
@@ -46,19 +44,6 @@ class HybridFunction(Function):
         return torch.tensor([gradients]).float() * grad_output.float(), None, None
         # three values returned from backward because 3 values are passed to forward
    
-    
-# Build the Layer from above custom Autograd
-class Hybrid(torch.nn.Module):
-    """ class to define the Hybrid quantum-classical layer"""
-
-    def __init__(self, backend, shots, shift):
-        super(Hybrid, self).__init__()
-        self.quantum_circuit = QuantumCircuit(1, backend, shots)
-        self.shift = shift
-
-    def forward(self, input):
-        return HybridFunction.apply(input, self.quantum_circuit, self.shift)
-
 
 """ Now preprocess data from MNIST datasets"""
 # For train data:

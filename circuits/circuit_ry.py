@@ -1,9 +1,27 @@
+"""
+Single Qubit where |+> is acted upon by Ry(theta) followed
+by a z-measurement, only one parameter `theta`.
+"""
+
 import qiskit
 import numpy as np
+from main import HybridFunction
+import torch
+
+
+class Hybrid(torch.nn.Module):
+    """ class to define the Hybrid quantum-classical layer"""
+
+    def __init__(self, backend, shots, shift):
+        super(Hybrid, self).__init__()
+        self.quantum_circuit = QuantumCircuit(1, backend, shots)
+        self.shift = shift
+
+    def forward(self, input):
+        return HybridFunction.apply(input, self.quantum_circuit, self.shift)
 
 
 class QuantumCircuit:
-    """ This class is to function the circuit"""
     def __init__(self, n_qubits, backend, shots):
         self._circuit = qiskit.QuantumCircuit(n_qubits)
         self.theta = qiskit.circuit.Parameter('theta')
