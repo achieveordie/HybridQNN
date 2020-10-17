@@ -52,8 +52,7 @@ as comparing them their controlled cousins.
  - ### `RX`, `RY` and `RZ` :
   The simpliest of circuits, This is a single-qubit circuit where a hadamard precedes the rotational gates
   one might not be very surprised to see that `RY` tremendously outperforms it's counterparts. Here's What their Negative-Log Likelihood Loss Graphs look like:
-  <img src="./result/circuit_ry/graph.png" alt="For RY" width="300" height="300" align="center">
-  <img src="./result/circuit_rx/graph.JPG" alt="For RX" width="300" height="300" align="left">
-  <img src="./result/circuit_rz/graph.JPG" alt="For RZ" width="300" height="300" align="right">
+  
+  <img src="./result/circuit_ry/graph.png" alt="For RY" width="300" height="300" align="center"><img src="./result/circuit_rx/graph.JPG" alt="For RX" width="300" height="300" align="left"><img src="./result/circuit_rz/graph.JPG" alt="For RZ" width="300" height="300" align="right">
   
       
