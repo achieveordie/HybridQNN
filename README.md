@@ -39,3 +39,21 @@ And the not-so-classical hyperparameters which remain constant throughout the ex
 7) shift parameter = &pi;/2, the [recommended](https://arxiv.org/abs/1811.11184) way to caculate a quantum gradient.
 8) `shots` = 100
 9) `aer_backend` = `qasm_simulator` , the device upon which we will run our quantum circuit on.
+
+##  To Reproduce the results
+One can easily reproduce the results by cloning and making the following minor changes:
+1) In `main.py` make sure the correct circuit is called, default cirucit is set to `circuit_ry.py`
+2) Make sure that the train and test data are pointing towards the correct local directory, set `download = True` to get the MNIST dataset.
+3) I have not added any code to print the graph, but one can easily do that as well by calling `plt.plot()` on `loss_list` in `main.py`
+
+## Analysis
+We wil try and figure out what might be the potential(and sometimes obvious) reasons behind the performance of a circuit by _comparing_ similar models(`RX`, `RY`, `RZ`) as well 
+as comparing them their controlled cousins.
+ - ### `RX`, `RY` and `RZ` :
+  The simpliest of circuits, This is a single-qubit circuit where a hadamard precedes the rotational gates
+  one might not be very surprised to see that `RY` tremendously outperforms it's counterparts. Here's What their Negative-Log Likelihood Loss Graphs look like:
+  <img src="./result/circuit_ry/graph.png" alt="For RY" width="300" height="300" align="center">
+  <img src="./result/circuit_rx/graph.JPG" alt="For RX" width="300" height="300" align="left">
+  <img src="./result/circuit_rz/graph.JPG" alt="For RZ" width="300" height="300" align="right">
+  
+      
