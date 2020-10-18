@@ -50,6 +50,7 @@ One can easily reproduce the results by cloning and making the following minor c
 We wil try and figure out what might be the potential(and sometimes obvious) reasons behind the performance of a circuit by _comparing_ similar models(`RX`, `RY`, `RZ`) as well 
 as comparing them with their controlled cousins.
  - ### `RX`, `RY` and `RZ` :
+ 
   The simpliest of circuits, This is a single-qubit circuit where a hadamard precedes the rotational gates and
   one might not be very surprised to see that `RY` tremendously outperforms it's counterparts. Here's What their Negative-Log Likelihood Loss Graphs look like(for `RX`, `RY` and `RZ` respectively):
   
@@ -89,3 +90,11 @@ expectation value. Just like `RX`, we could probably make use of `RZ` gate in a 
 
 One can further verify the above reasoning by either increasing `epochs` or by further decreasing sample-size of testing. `RX` and `RZ` have no performance upgradation and hangs
 around the same numbers as before.
+
+- ### `CRX`, `CRY` and `CRZ` :
+
+We can believe without an inch of a doubt that the above assessment stands true for their controlled cousins as well. This may not come of as a surprise since we expected an additional control qubit to add more entropy to the expectation value, here are the graphs for `CRX`, `CRY` and `CRZ` respectively:
+
+ <p> <img src="./result/circuit_cry/graph.JPG" alt="For RY" width="300" height="300" align="center"><img src="./result/circuit_crx/graph.JPG" alt="For RX" width="300" height="300" align="left"><img src="./result/circuit_crz/graph.JPG" alt="For RZ" width="300" height="300" align="right"> </p>
+
+What might be interesting is to compare the performance of a controlled gate with a non-controlled one. Let us take `CRY` and `RY` as a running example. Upon first inspection, we cannot really see much difference in their graphs. While the same general pattern seems to exist in both gates, we can see that `RY` outperforms `CRY` in terms of having an even lower loss value which touches -1.0 whereas in the latter case we have stagnated over -0.76. This observation further enforces our hypothesis that the control qubit adds an additional constraint which is satisifed only 50% of the time by the virtue of presence of a Hadamard gate and hence only when the control qubit is in the state 1 we can expect the rotation of `RY` to occur. We can do the same with other gates but since they already don't show any progress we cannot expect an additional control qubit to differ from the perceived (already present) randomness.
