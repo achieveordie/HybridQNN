@@ -36,7 +36,7 @@ Just like the architecture, I have chosen hyperparameters that were well enough 
 5) `epochs` = 20
 6) `batch_size` = 1
 And the not-so-classical hyperparameters which remain constant throughout the experiments:
-7) shift parameter = &pi;/2, the [recommended](https://arxiv.org/abs/1811.11184) way to caculate a quantum gradient.
+7) shift parameter = &pi;/2, the [recommended](https://arxiv.org/abs/1811.11184) way to calculate a quantum gradient.
 8) `shots` = 100
 9) `aer_backend` = `qasm_simulator` , the device upon which we will run our quantum circuit on.
 
@@ -49,6 +49,41 @@ One can easily reproduce the results by cloning and making the following minor c
 ## Analysis
 We wil try and figure out what might be the potential(and sometimes obvious) reasons behind the performance of a circuit by _comparing_ similar models(`RX`, `RY`, `RZ`) as well 
 as comparing them with their controlled cousins.
+ - ### (Update) Wait, why is the value of `shift` &pi;/2 ?:
+ 
+   I feel like I glanced over the fact that the value of shift in the code is `np.pi/2` without explaining the reasoning behind it. This value is not necessarily &pi;/2 and is supposed to be calculated for every parameterized gate. Even though I have provided the research papaer that talks about it extensively, I feel I should've provided a brief overview for those who find it overwhelming.
+   
+   Suppose we have a single parameterized gate U<sub>G</sub>(&theta;) = e<sup>(-i&theta;aG)</sup>, where
+   
+    `G` is the Hermetian matrix in our parameterized gate.
+    `a` is a constant, usually written in conjugation with &theta;
+    
+   It can be shown that it can be also be written as: e<sup>(-i&theta;aG)</sup> = cos(a&theta;)I - isin(a&theta;)G
+   
+   The above notation must seem similar to those who have seen Rotation gates before,
+    R<sub>p</sub>(&theta;) = cos(&theta;/2)I - isin(&theta;/2)P
+    where P = `X`, `Y`, `Z` depending upon which Pauli rotation one wants. `I` here is identity matrix and the value of `a=0.5`.
+    
+   Indeed, G can be either be of `X`, `Y`, `Z` depending upon your choice of gate.
+   
+   The expectation value of a measurement can be written as:
+<p align="center">
+ <a href="https://www.codecogs.com/eqnedit.php?latex=f(\theta)&space;=&space;\langle\psi|&space;U_G^{\dag}(\theta)&space;A&space;U_G(\theta)|\psi\rangle" target="_blank"><img src="https://latex.codecogs.com/gif.latex?f(\theta)&space;=&space;\langle\psi|&space;U_G^{\dag}(\theta)&space;A&space;U_G(\theta)|\psi\rangle" title="f(\theta) = \langle\psi| U_G^{\dag}(\theta) A U_G(\theta)|\psi\rangle" /></a>
+</p>
+
+   where A is the observable for any state |&psi;&rangle;. What we want is &delta;f(&theta;) with respect to &theta; which can be estimated as follows:
+   
+<p align=center>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\delta}{\delta&space;\theta}f(\theta)&space;=&space;r(f(\theta&space;&plus;&space;\frac{\pi}{4r})&space;-&space;f(\theta&space;-&space;\frac{\pi}{4r}))" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\delta}{\delta&space;\theta}f(\theta)&space;=&space;r(f(\theta&space;&plus;&space;\frac{\pi}{4r})&space;-&space;f(\theta&space;-&space;\frac{\pi}{4r}))" title="\frac{\delta}{\delta \theta}f(\theta) = r(f(\theta + \frac{\pi}{4r}) - f(\theta - \frac{\pi}{4r}))" /></a>
+</p>
+
+  Where `r` can be calculated by the formula:
+<p align=center>
+ <a href="https://www.codecogs.com/eqnedit.php?latex=r&space;=&space;\frac{a}{2}(e_1&space;-&space;e_2)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?r&space;=&space;\frac{a}{2}(e_1&space;-&space;e_2)" title="r = \frac{a}{2}(e_1 - e_2)" /></a>
+</p>
+
+Where e<sub>1</sub> and e<sub>2</sub> are the eigenvalues of the Hermetian matrix `G` and `a` is the before mentioned constant. Now one can see why the shift parameter of all three gates remains to be &pi;/2, its simply because all three pauli matrices have same eigenvalue of +1 and -1. So, `r=0.5` and hence our shift, which is &pi;/4r becomes &pi;/2. 
+ 
  - ### `RX`, `RY` and `RZ` :
  
   The simpliest of circuits, This is a single-qubit circuit where a hadamard precedes the rotational gates and
@@ -86,7 +121,7 @@ no relative change in the probability of the output(which is only 0 or 1, fyi). 
 `RZ` on the otherhand looks very enticing. It seems like we are actually changing the (relative) probabilitiies of these states but upon second consideration we can tell that this is a facade too, since despite having different values of &theta; in the power of e, we can see that the mod of both the terms makes it 1, hence contributing nothing to the
 expectation value. Just like `RX`, we could probably make use of `RZ` gate in a more sophisticated way to make use of its 'different-values but same mod' feature.
 
-`RY` does the job because it can do what the above gates couldn't. It can make use of appropiate &theta; to get rid of either |0&rangle; or |1&rangle; completely(not simultaneously, of-course). For a value of &theta; = &pi;/2 we can eliminate |0&rangle; and for a value &theta; = 3&\pi;/2 we can get rid of |1&rangle;. Whereas this doesn't happen in the other two cases which can be verified easily using a pen and a paper and therefore I shall be skipping it because writing them here is cumbersome.
+`RY` does the job because it can do what the above gates couldn't. It can make use of appropiate &theta; to get rid of either |0&rangle; or |1&rangle; completely(not simultaneously, of-course). For a value of &theta; = &pi;/2 we can eliminate |0&rangle; and for a value &theta; = 3&pi;/2 we can get rid of |1&rangle;. Whereas this doesn't happen in the other two cases which can be verified easily using a pen and a paper and therefore I shall be skipping it because writing them here is cumbersome.
 
 One can further verify the above reasoning by either increasing `epochs` or by further decreasing sample-size of testing. `RX` and `RZ` have no performance upgradation and hangs
 around the same numbers as before.
